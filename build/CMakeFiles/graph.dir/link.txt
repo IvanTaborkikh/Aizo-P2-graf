@@ -1,0 +1,1 @@
+/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/graph.dir/link.d CMakeFiles/graph.dir/src/main.cpp.o -o graph  -Wl,-rpath,/home/padadak/unik/Projekt2Aizo/lib /home/padadak/unik/Projekt2Aizo/lib/libparameters.so
