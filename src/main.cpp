@@ -4,6 +4,9 @@
 #include "IncidenceMatrix.h"
 #include "AdjacencyList.h"
 #include "Prim.h"
+#include "Kruskala.h"
+#include "Dijkstry.h"
+#include "FordaBellmana.h"
 
 void runMST(const GraphData& data) {
     using namespace Parameters;
@@ -14,9 +17,16 @@ void runMST(const GraphData& data) {
         im.print();
         std::cout << "\n";
 
-        MSTResult* result = primMatrix(im);
-        result->print();
-        delete result;
+        if (algorithm == Algorithms::prim || algorithm == Algorithms::allAlgorithms) {
+            MSTResult* result = primMatrix(im);
+            result->print("Prim");
+            delete result;
+        }
+        if (algorithm == Algorithms::kruskal || algorithm == Algorithms::allAlgorithms) {
+            MSTResult* result = kruskalMatrix(im);
+            result->print("Kruskala");
+            delete result;
+        }
         std::cout << "\n";
     }
 
@@ -26,9 +36,61 @@ void runMST(const GraphData& data) {
         al.print();
         std::cout << "\n";
 
-        MSTResult* result = primList(al);
-        result->print();
-        delete result;
+        if (algorithm == Algorithms::prim || algorithm == Algorithms::allAlgorithms) {
+            MSTResult* result = primList(al);
+            result->print("Prim");
+            delete result;
+        }
+        if (algorithm == Algorithms::kruskal || algorithm == Algorithms::allAlgorithms) {
+            MSTResult* result = kruskalList(al);
+            result->print("Kruskala");
+            delete result;
+        }
+        std::cout << "\n";
+    }
+}
+
+void runSP(const GraphData& data) {
+    using namespace Parameters;
+
+    int start = vertexStart;
+    if (start == -1) start = 0;
+
+    if (structure == Structures::incidenceMatrix || structure == Structures::allStructures) {
+        IncidenceMatrix im(data.vertices, data.edgeCount);
+        im.loadFromData(data, true);
+        im.print();
+        std::cout << "\n";
+
+        if (algorithm == Algorithms::dijkstra || algorithm == Algorithms::allAlgorithms) {
+            SPResult* result = dijkstraMatrix(im, start);
+            result->print("Dijkstry");
+            delete result;
+        }
+        if (algorithm == Algorithms::bellmanFord || algorithm == Algorithms::allAlgorithms) {
+            SPResult* result = bellmanFordMatrix(im, start);
+            printSP(result, "Forda-Bellmana");
+            delete result;
+        }
+        std::cout << "\n";
+    }
+
+    if (structure == Structures::adjacencyList || structure == Structures::allStructures) {
+        AdjacencyList al(data.vertices);
+        al.loadFromData(data, true);
+        al.print();
+        std::cout << "\n";
+
+        if (algorithm == Algorithms::dijkstra || algorithm == Algorithms::allAlgorithms) {
+            SPResult* result = dijkstraList(al, start);
+            result->print("Dijkstry");
+            delete result;
+        }
+        if (algorithm == Algorithms::bellmanFord || algorithm == Algorithms::allAlgorithms) {
+            SPResult* result = bellmanFordList(al, start);
+            printSP(result, "Forda-Bellmana");
+            delete result;
+        }
         std::cout << "\n";
     }
 }
@@ -37,7 +99,7 @@ void runSingleFile() {
     using namespace Parameters;
 
     if (inputFile.empty()) {
-        std::cerr << "No file" << std::endl;
+        std::cerr << "ERROR: No input file specified (use -i)" << std::endl;
         return;
     }
 
@@ -46,25 +108,25 @@ void runSingleFile() {
         return;
     }
 
+    std::cout << "Loaded graph: " << data.vertices << " vertices, "
+              << data.edgeCount << " edges\n\n";
 
     if (problem == Problems::mst) {
-        if (algorithm == Algorithms::prim || algorithm == Algorithms::allAlgorithms) {
-            runMST(data);
-        } else {
-            std::cerr << "No algo" << std::endl;
-        }
+        runMST(data);
+    } else if (problem == Problems::sp) {
+        runSP(data);
     } else {
-        std::cerr << "No probl" << std::endl;
+        std::cerr << "ERROR: Problem not implemented yet" << std::endl;
     }
 }
 
 void runBenchmark() {
-    std::cout << "wait" << std::endl;
+    std::cout << "Benchmark mode - not implemented yet" << std::endl;
 }
 
 int main(int argc, char** argv) {
     if (Parameters::readParameters(argc - 1, argv + 1) != 0) {
-        std::cerr << "No param" << std::endl;
+        std::cerr << "Failed to read parameters!" << std::endl;
         return 1;
     }
 
@@ -79,7 +141,7 @@ int main(int argc, char** argv) {
             runBenchmark();
             break;
         default:
-            std::cerr << "No spec" << std::endl;
+            std::cerr << "ERROR: No mode specified. Use --help for usage." << std::endl;
             return 1;
     }
 
