@@ -4,12 +4,14 @@
 #include <iostream>
 #include "GraphFileReader.h"
 
+// graph stored as an incidence matrix (vertices x edges)
 class IncidenceMatrix {
 private:
     int** matrix;
     int vertices;
     int edges;
 
+    // allocate matrix and fill it with zeros
     void allocate() {
         matrix = new int*[vertices];
         for (int i = 0; i < vertices; i++) {
@@ -17,6 +19,7 @@ private:
             for (int j = 0; j < edges; j++) {
                 matrix[i][j] = 0;
             }
+
         }
     }
 
@@ -30,8 +33,10 @@ public:
             delete[] matrix[i];
         }
         delete[] matrix;
+
     }
 
+    // build matrix from edge list; for directed graph "from" gets +w and "to" gets -w
     void loadFromData(const GraphData& data, bool directed) {
         for (int i = 0; i < data.edgeCount; i++) {
             int from = data.edges[i].from;
@@ -52,9 +57,24 @@ public:
         return matrix[vertex][edgeIndex];
     }
 
+
     int getVertices() const { return vertices; }
     int getEdges() const { return edges; }
 
+    // verification: count columns (edges) that have any non-zero entry
+    int policzKrawedzie() const {
+        int licznik = 0;
+        for (int j = 0; j < edges; j++) {
+            bool pusta = true;
+            for (int i = 0; i < vertices; i++) {
+                if (matrix[i][j] != 0) { pusta = false; break; }
+            }
+            if (!pusta) licznik++;
+        }
+        return licznik;
+    }
+
+    // print the whole matrix to screen
     void print() const {
         std::cout << "Incidence matrix (" << vertices << "x" << edges << "):\n";
         std::cout << "     ";
@@ -69,6 +89,7 @@ public:
             }
             std::cout << "\n";
         }
+        
     }
 };
 

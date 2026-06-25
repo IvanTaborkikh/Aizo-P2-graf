@@ -5,16 +5,19 @@
 #include <iostream>
 #include <string>
 
+// single edge: start vertex, end vertex and weight/capacity
 struct Edge {
     int from;
     int to;
     int weight;
 };
 
+// whole graph read from file, edges allocated dynamically
 struct GraphData {
     int vertices;
     int edgeCount;
     Edge* edges;
+
 
     GraphData() : vertices(0), edgeCount(0), edges(nullptr) {}
 
@@ -23,6 +26,7 @@ struct GraphData {
     }
 };
 
+// read graph from file: first line is "vertices edges", then one edge per line
 inline bool readGraphFromFile(const std::string& filename, GraphData& data) {
     std::ifstream file(filename);
     if (!file.is_open()) {
@@ -34,6 +38,7 @@ inline bool readGraphFromFile(const std::string& filename, GraphData& data) {
     if (data.vertices <= 0 || data.edgeCount <= 0) {
         std::cerr << "ERROR: Invalid graph size in file" << std::endl;
         return false;
+
     }
 
     data.edges = new Edge[data.edgeCount];
@@ -47,6 +52,7 @@ inline bool readGraphFromFile(const std::string& filename, GraphData& data) {
         return false;
     }
 
+    
     file.close();
     return true;
 }

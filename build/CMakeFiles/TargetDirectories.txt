@@ -1,3 +1,0 @@
-/home/padadak/unik/Projekt2Aizo/build/CMakeFiles/graph.dir
-/home/padadak/unik/Projekt2Aizo/build/CMakeFiles/edit_cache.dir
-/home/padadak/unik/Projekt2Aizo/build/CMakeFiles/rebuild_cache.dir
